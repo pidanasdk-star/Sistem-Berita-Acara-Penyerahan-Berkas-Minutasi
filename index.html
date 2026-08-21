@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Berita Acara Penyerahan Berkas Minutasi</title>
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --primary-hover: #2b6cb0;
+            --bg-color: #f7fafc;
+            --card-bg: #ffffff;
+            --text-color: #2d3748;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header-title {
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--primary-color);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #4a5568;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-hover);
+        }
+
+        .section-header {
+            grid-column: span 2;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 5px;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        .preview-text {
+            font-size: 0.85rem;
+            color: #718096;
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: #718096;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4a5568;
+        }
+
+        /* Styles for Print Layout */
+        #printable-area {
+            display: none;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-area, #printable-area * {
+                visibility: visible;
+            }
+            #printable-area {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                color: #000;
+                background: #fff;
+                font-family: 'Times New Roman', Times, serif;
+                font-size: 12pt;
+                line-height: 1.5;
+            }
+
+            @page {
+                size: A4 portrait;
+                margin: 20mm 20mm 20mm 20mm;
+            }
+
+            .print-header {
+                text-align: center;
+                font-weight: bold;
+                font-size: 13pt;
+                text-transform: uppercase;
+                margin-bottom: 20px;
+                text-decoration: underline;
+            }
+
+            .print-body {
+                text-align: justify;
+                margin-bottom: 15px;
+            }
+
+            .print-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 15px 0;
+            }
+
+            .print-table th, .print-table td {
+                border: 1px solid #000;
+                padding: 6px 8px;
+                vertical-align: top;
+                font-size: 10pt;
+            }
+
+            .print-table th {
+                background-color: #f0f0f0 !important;
+                -webkit-print-color-adjust: exact;
+                text-align: center;
+                font-weight: bold;
+            }
+
+            .print-footer {
+                margin-top: 30px;
+                width: 100%;
+            }
+
+            .signature-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .signature-table td {
+                width: 50%;
+                text-align: center;
+                vertical-align: top;
+            }
+
+            .sig-space {
+                height: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 class="header-title">Sistem Input & Cetak Berita Acara Penyerahan Berkas Minutasi</h2>
+
+    <div class="card">
+        <form id="minutasiForm">
+            <div class="form-grid">
+                <div class="section-header">I. Informasi Penyerahan</div>
+                
+                <div class="form-group">
+                    <label>Hari Penyerahan</label>
+                    <select id="hari" required>
+                        <option value="Senin">Senin</option>
+                        <option value="Selasa">Selasa</option>
+                        <option value="Rabu">Rabu</option>
+                        <option value="Kamis">Kamis</option>
+                        <option value="Jumat">Jumat</option>
+                        <option value="Sabtu">Sabtu</option>
+                        <option value="Minggu">Minggu</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Tanggal Penyerahan</label>
+                    <input type="text" id="tanggalPenyerahan" placeholder="Contoh: 10 Juni 2026" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Jenis Perkara</label>
+                    <input type="text" id="jenisPerkara" value="Pidana" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Jumlah Berkas (Angka)</label>
+                    <input type="number" id="jumlahBerkasInput" min="1" value="1" required oninput="updateBerkasPreview()">
+                    <div id="berkasPreview" class="preview-text">Format output: 1 (satu)</div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Jumlah CD / Kelengkapan Tambahan (Optional)</label>
+                    <input type="number" id="jumlahCDInput" min="0" placeholder="Masukkan jumlah CD (kosongkan bila tidak ada)" oninput="updateCDPreview()">
+                    <div id="cdPreview" class="preview-text">Format output: (tidak ada CD)</div>
+                </div>
+
+                <div class="section-header">II. Data Perkara & Terdakwa</div>
+
+                <div class="form-group full-width">
+                    <label>Nama Terdakwa / Para Pihak</label>
+                    <textarea id="namaTerdakwa" rows="2" placeholder="Nama lengkap Terdakwa atau Pemohon vs Termohon" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Nomor & Tanggal Putusan PN</label>
+                    <textarea id="putusanPN" rows="2" placeholder="106/Pid.Sus/2025/PN Sdk&#10;13 Nov. 2025" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Nomor & Tanggal Putusan PT (Bila ada)</label>
+                    <textarea id="putusanPT" rows="3" placeholder="3469/PID.SUS/2025/PT MDN&#10;08 Jan. 2026&#10;Tanggal Pemberitahuan: ..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Nomor & Tanggal Putusan MA / Kasasi / PK (Bila ada)</label>
+                    <textarea id="putusanMA" rows="3" placeholder="6113 K/PID.SUS/2026&#10;29 Apr. 2026&#10;Tanggal Pemberitahuan: ..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Tanggal BHT (Berkekuatan Hukum Tetap)</label>
+                    <input type="text" id="tanggalBHT" placeholder="Contoh: 08 Jun. 2026" required>
+                </div>
+
+                <div class="section-header">III. Pihak Penandatangan</div>
+
+                <div class="form-group">
+                    <label>Yang Menerima (Panitera Muda Hukum)</label>
+                    <input type="text" id="penerimaNama" value="ELJON GULTOM" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Yang Menyerahkan (Panitera Muda Pidana)</label>
+                    <input type="text" id="penyerahNama" value="ANINTA SEROJA SEMBIRING, SH.,MH." required>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset Input</button>
+                <button type="submit" class="btn btn-primary">Pratinjau & Cetak</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Printable Document Template -->
+<div id="printable-area">
+    <div class="print-header">
+        BERITA ACARA PENYERAHAN BERKAS MINUTASI
+    </div>
+
+    <div class="print-body">
+        Pada hari <span id="p_hari"></span> tanggal <span id="p_tanggal"></span>, Telah diserahkan berkas <span id="p_jenis"></span> sebanyak <span id="p_jumlah"></span> berkas yang telah di minutasi <span id="p_kelengkapan"></span> dan telah mempunyai kekuatan hukum tetap ke bagian Kepaniteraan Hukum yang terdiri dari :
+    </div>
+
+    <table class="print-table">
+        <thead>
+            <tr>
+                <th style="width: 25%;">Nama Terdakwa / Pihak</th>
+                <th style="width: 25%;">Nomor / Tanggal Putusan Perkara PN</th>
+                <th style="width: 20%;">Nomor / Tanggal Putusan Perkara PT</th>
+                <th style="width: 20%;">Nomor / Tanggal Putusan Perkara MA</th>
+                <th style="width: 10%;">Tanggal BHT</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td id="p_td_terdakwa"></td>
+                <td id="p_td_pn"></td>
+                <td id="p_td_pt"></td>
+                <td id="p_td_ma"></td>
+                <td id="p_td_bht"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="print-body" style="margin-top: 15px;">
+        Demikianlah Berita Acara penyerahan berkas perkara ini, yang ditandatangani Panitera Muda Pidana dan Panitera Muda Hukum.
+    </div>
+
+    <div class="print-footer">
+        <table class="signature-table">
+            <tr>
+                <td>
+                    Yang Menerima<br>
+                    <strong>PANITERA MUDA HUKUM</strong>
+                    <div class="sig-space"></div>
+                    <strong id="p_penerima"></strong>
+                </td>
+                <td>
+                    Yang Menyerahkan<br>
+                    <strong>PANITERA MUDA PIDANA</strong>
+                    <div class="sig-space"></div>
+                    <strong id="p_penyerah"></strong>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Fungsi konversi angka ke terbilang Bahasa Indonesia
+    function terbilang(n) {
+        if (n < 0) return '';
+        var satuan = ['', 'satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh', 'delapan', 'sembilan', 'sepuluh', 'sebelas'];
+        n = parseInt(n, 10);
+        if (isNaN(n)) return '';
+        if (n < 12) return satuan[n];
+        if (n < 20) return terbilang(n - 10) + ' belas';
+        if (n < 100) return terbilang(Math.floor(n / 10)) + ' puluh ' + terbilang(n % 10);
+        if (n < 200) return 'seratus ' + terbilang(n - 100);
+        if (n < 1000) return terbilang(Math.floor(n / 100)) + ' ratus ' + terbilang(n % 100);
+        return n.toString();
+    }
+
+    function formatAngkaTerbilang(num) {
+        if (!num || num <= 0) return '';
+        let kata = terbilang(num).trim();
+        return num + ' (' + kata + ')';
+    }
+
+    function updateBerkasPreview() {
+        let val = document.getElementById('jumlahBerkasInput').value;
+        let formatted = formatAngkaTerbilang(val);
+        document.getElementById('berkasPreview').innerText = formatted ? 'Format output: ' + formatted : 'Format output: -';
+    }
+
+    function updateCDPreview() {
+        let val = document.getElementById('jumlahCDInput').value;
+        if (val && val > 0) {
+            let formatted = formatAngkaTerbilang(val);
+            document.getElementById('cdPreview').innerText = 'Format output: beserta ' + formatted + ' buah CD';
+        } else {
+            document.getElementById('cdPreview').innerText = 'Format output: (tidak ada CD)';
+        }
+    }
+
+    // Inisialisasi tampilan preview saat load halaman
+    updateBerkasPreview();
+    updateCDPreview();
+
+    document.getElementById('minutasiForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Pemetaan data input ke elemen cetak
+        document.getElementById('p_hari').innerText = document.getElementById('hari').value;
+        document.getElementById('p_tanggal').innerText = document.getElementById('tanggalPenyerahan').value;
+        document.getElementById('p_jenis').innerText = document.getElementById('jenisPerkara').value;
+        
+        let berkasVal = document.getElementById('jumlahBerkasInput').value;
+        document.getElementById('p_jumlah').innerText = formatAngkaTerbilang(berkasVal);
+        
+        let cdVal = document.getElementById('jumlahCDInput').value;
+        if (cdVal && cdVal > 0) {
+            document.getElementById('p_kelengkapan').innerText = 'beserta ' + formatAngkaTerbilang(cdVal) + ' buah CD ';
+        } else {
+            document.getElementById('p_kelengkapan').innerText = '';
+        }
+
+        document.getElementById('p_td_terdakwa').innerHTML = formatText(document.getElementById('namaTerdakwa').value);
+        document.getElementById('p_td_pn').innerHTML = formatText(document.getElementById('putusanPN').value);
+        document.getElementById('p_td_pt').innerHTML = formatText(document.getElementById('putusanPT').value) || '-';
+        document.getElementById('p_td_ma').innerHTML = formatText(document.getElementById('putusanMA').value) || '-';
+        document.getElementById('p_td_bht').innerHTML = formatText(document.getElementById('tanggalBHT').value);
+
+        document.getElementById('p_penerima').innerText = document.getElementById('penerimaNama').value;
+        document.getElementById('p_penyerah').innerText = document.getElementById('penyerahNama').value;
+
+        // Buka dialog cetak browser
+        window.print();
+    });
+
+    function formatText(str) {
+        if (!str) return '';
+        return str.replace(/\n/g, '<br>');
+    }
+
+    function resetForm() {
+        document.getElementById('minutasiForm').reset();
+        updateBerkasPreview();
+        updateCDPreview();
+    }
+</script>
+
+</body>
+</html>
